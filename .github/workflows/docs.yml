@@ -1,0 +1,29 @@
+name: docs
+on: push
+
+jobs:
+  sync_docs:
+    name: Sync docs to GitHub wiki
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current version
+        uses: actions/checkout@v2
+      - name: Create files to sync
+        run: |
+          cp README.md Home.md
+          sed -i 's/.md//g' Home.md
+          sed -i 's/.md//g' 12_who_ruled/12_who_ruled.md
+          sed -i 's/.md//g' reveries_of_the_solitary_walker/reveries_of_the_solitary_walker.md
+          sed -i 's/.md//g' joseph_fouché/joseph_fouché.md
+          sed -i 's/.md//g' albert_soboul/albert_soboul.md
+          sed -i 's/12_who_ruled\///g' Home.md
+          sed -i 's/reveries_of_the_solitary_walker\///g' Home.md
+          sed -i 's/joseph_fouché\///g' Home.md
+          sed -i 's/albert_soboul\///g' Home.md
+      - name: Sync with local action
+        uses: kai-tub/external-repo-sync-action@v1
+        with:
+          source-directory: "."
+          include-patterns: "Home.md 12_who_ruled/*.md reveries_of_the_solitary_walker/*.md joseph_fouché/*.md albert_soboul/*.md"
+        env:
+          GH_ACCESS_TOKEN: ${{ secrets.GH_PAT }}
